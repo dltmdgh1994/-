@@ -52,28 +52,23 @@ class MyMqtt_Sub:
 
     def on_message(self, client, userdata, msg):
 
-<<<<<<< Updated upstream
         myval = msg.payload.decode("utf-8")
 
-=======
         # 이미지인지 Co2인지 확인
         myval = str(msg.payload)
->>>>>>> Stashed changes
         print(myval)
         # print(myval)
         # print(msg.topic + "----" + str(myval))
 
         # 움직임 탐지 방식 => 원본 이미지와 새로운 이미지 사이의 달라진 픽셀 측정
         # 첫 이미지를 원본 이미지로??? 아니면 주기적으로 원본 이미지 수집 => 게이트에서 판별???
-<<<<<<< Updated upstream
-        if myval == 'img_data':
-=======
+
         if type(myval) == str:
             # reshape 해줘야 한다.
             myval = np.fromstring(myval, np.uint8)
             myval = myval.reshape(-1, 1)
             myval = cv2.imdecode(myval, cv2.IMREAD_COLOR)
->>>>>>> Stashed changes
+
             if self.origin_img is None:
                 self.origin_img = myval
                 cv2.imshow('image', self.origin_img)
@@ -155,14 +150,14 @@ class MyMqtt_Sub:
 
         self.sleep_gate(self, self.eye_blink, self.motion, self.co2)
 
-<<<<<<< Updated upstream
-=======
     @staticmethod
->>>>>>> Stashed changes
     def sleep_gate(self, eye_blink, motion, co2):
         if eye_blink == 1 and motion == 1 and co2 == 1:
             print("졸았다!!!!!")
+        else:
+            print("안 졸았다!!")
 
+    @staticmethod
     def mse(self, img, compare_img):
         err = np.sum((img.astype("float") - compare_img.astype("float")) ** 2)
         err /= float(img.shape[0] * compare_img.shape[1])
