@@ -1,7 +1,7 @@
 import time
 import threading
 import paho.mqtt.client as mqtt
-# import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 from tensorflow.keras.models import load_model
 import tensorflow as tf
 import cv2
@@ -16,13 +16,14 @@ from PIL import Image
 class MyMqtt_Sub:
 
     def __init__(self):
+
         client = mqtt.Client()
         client.on_connect = self.on_connect
         client.on_message = self.on_message
         client.connect("3.35.174.45", 1883, 60)  # EC2 mqttbroker 주소 
         ##############################
         #GPIO 설정
-        # GPIO.setmode(GPIO.BCM)
+        GPIO.setmode(GPIO.BCM)
      
         ############################
         ############################
@@ -32,7 +33,7 @@ class MyMqtt_Sub:
             'shape_predictor_68_face_landmarks.dat 경로')
         self.img_size = (32, 32)
 
-        self.model = load_model('C:/Users/s_csmscox/jupyterSave/eye_blink/eye_blink_CNN_ImgGen1_FT.h5')
+        self.model = load_model('model.h5 경로')
         self.origin_img = None
 
         self.eye_blink = None
@@ -52,33 +53,18 @@ class MyMqtt_Sub:
 
     def on_message(self, client, userdata, msg):
 
-<<<<<<< Updated upstream
         myval = msg.payload.decode("utf-8")
 
-=======
-        # 이미지인지 Co2인지 확인
-        myval = str(msg.payload)
->>>>>>> Stashed changes
         print(myval)
-        # print(myval)
-        # print(msg.topic + "----" + str(myval))
+        print(msg.topic + "----" + str(myval))
 
         # 움직임 탐지 방식 => 원본 이미지와 새로운 이미지 사이의 달라진 픽셀 측정
         # 첫 이미지를 원본 이미지로??? 아니면 주기적으로 원본 이미지 수집 => 게이트에서 판별???
-<<<<<<< Updated upstream
         if myval == 'img_data':
-=======
-        if type(myval) == str:
-            # reshape 해줘야 한다.
-            myval = np.fromstring(myval, np.uint8)
-            myval = myval.reshape(-1, 1)
-            myval = cv2.imdecode(myval, cv2.IMREAD_COLOR)
->>>>>>> Stashed changes
             if self.origin_img is None:
-                self.origin_img = myval
-                cv2.imshow('image', self.origin_img)
+                self.origin_img = cv2.imread('이미지')
             else:
-                compare_img = myval
+                compare_img = cv2.imread('이미지')
                 # 이산화탄소 데이터 / 이미지 파일 구분?
                 faces = self.detector(myval)
 
@@ -119,8 +105,6 @@ class MyMqtt_Sub:
                     # cv2.putText(compare_img, str(pred_r), tuple(eye_rect_r[0:2]), cv2.FONT_HERSHEY_SIMPLEX, 0.7,
                     #             (255, 255, 255), 2)
 
-                    cv2.imshow('image', compare_img)
-
                     # 두 눈 다 감은 경우 졸음으로 예측
                     if pred_l == 0 and pred_r == 0:
                         n_count += 1
@@ -155,10 +139,6 @@ class MyMqtt_Sub:
 
         self.sleep_gate(self, self.eye_blink, self.motion, self.co2)
 
-<<<<<<< Updated upstream
-=======
-    @staticmethod
->>>>>>> Stashed changes
     def sleep_gate(self, eye_blink, motion, co2):
         if eye_blink == 1 and motion == 1 and co2 == 1:
             print("졸았다!!!!!")
@@ -193,4 +173,4 @@ if __name__ == "__main__":
         mymqtt = MyMqtt_Sub()
     except KeyboardInterrupt:
         print("종료")
-        # GPIO.cleanup()
+        GPIO.cleanup()
