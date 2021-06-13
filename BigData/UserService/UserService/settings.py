@@ -26,7 +26,7 @@ with open(os.path.join(BASE_DIR, 'key.json')) as json_file:
 SECRET_KEY = json_data["Django_Server"]["SECRET_KEY"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 # 앱에 접근할 수 있는 권한을 주는 곳.
 # * : 모든 사용자를 수용
